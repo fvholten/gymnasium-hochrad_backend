@@ -1,0 +1,47 @@
+apply plugin: 'java'
+apply plugin: 'java-library-distribution'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    // https://mvnrepository.com/artifact/org.jsoup/jsoup
+    compile group: 'org.jsoup', name: 'jsoup', version: '1.11.3'
+
+    compile 'com.google.firebase:firebase-admin:6.6.0'
+
+    // https://mvnrepository.com/artifact/org.threeten/threeten-extra
+    compile group: 'org.threeten', name: 'threeten-extra', version: '1.4'
+
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.7'
+
+
+}
+
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+    manifest {
+        attributes "Main-Class": "de.hochrad.backend.Main",
+                "Class-Path": configurations.compile.collect { it.getName() }.join(' ')
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+
+jar {
+
+    manifest {
+        attributes "Main-Class": "de.hochrad.backend.Main",
+                "Class-Path": configurations.compile.collect { it.getName() }.join(' ')
+
+    }
+    // How-to add class path:
+    //     https://stackoverflow.com/questions/22659463/add-classpath-in-manifest-using-gradle
+    //     https://gist.github.com/simon04/6865179
+}
